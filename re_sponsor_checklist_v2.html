@@ -1,0 +1,499 @@
+
+<h2 class="sr-only">Royal Enfield event sponsorship checklist — brands sorted by correct category</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,sans-serif);background:transparent;color:var(--color-text-primary);padding:16px 0}
+.topbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.topbar input{flex:1;min-width:160px;padding:8px 12px;border:0.5px solid var(--color-border-secondary);border-radius:8px;background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;outline:none}
+.topbar input:focus{border-color:#bf5000}
+.btn{padding:6px 13px;border:0.5px solid var(--color-border-secondary);border-radius:8px;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer}
+.btn:hover{background:var(--color-background-secondary)}
+.btn.acc{background:#bf5000;color:#fff;border-color:#bf5000}
+.btn.acc:hover{background:#9e4200}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.stat{background:var(--color-background-secondary);border-radius:8px;padding:7px 13px;font-size:12px;color:var(--color-text-secondary)}
+.stat b{color:#bf5000;font-size:14px;font-weight:500}
+.section{margin-bottom:8px;border:0.5px solid var(--color-border-tertiary);border-radius:12px;overflow:hidden;background:var(--color-background-primary)}
+.section.confirmed{border-color:#bf500040}
+.sec-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--color-background-secondary);user-select:none}
+.sec-hd:hover{background:var(--color-background-tertiary,var(--color-background-secondary))}
+.sec-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sec-label{flex:1;font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.confirmed .sec-label{color:#bf5000}
+.sec-sub{font-size:11px;color:var(--color-text-tertiary);margin-left:2px}
+.badge{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--color-background-info);color:var(--color-text-info);white-space:nowrap}
+.prog{width:64px;height:3px;background:var(--color-border-tertiary);border-radius:2px;flex-shrink:0}
+.prog-fill{height:100%;background:#bf5000;border-radius:2px;transition:width .2s}
+.chev{font-size:10px;color:var(--color-text-tertiary);transition:transform .2s}
+.chev.open{transform:rotate(90deg)}
+.sec-body{display:none;padding:6px 10px 10px}
+.sec-body.open{display:block}
+.brand{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer}
+.brand:hover{background:var(--color-background-secondary)}
+.brand input{accent-color:#bf5000;width:13px;height:13px;cursor:pointer;flex-shrink:0}
+.brand-name{font-size:13px;flex:1}
+.brand.ticked .brand-name{text-decoration:line-through;color:var(--color-text-tertiary)}
+.pill{font-size:10px;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.pill.in{background:#eaf3de;color:#3b6d11}
+.pill.gl{background:#e6f1fb;color:#185fa5}
+.pill.hot{background:#faece7;color:#993c1d}
+.why{font-size:11px;color:var(--color-text-tertiary);font-style:italic;margin-left:2px}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:4px 0}
+</style>
+
+<div class="topbar">
+  <input type="text" id="srch" placeholder="Search brands or categories..." oninput="doFilter()">
+  <button class="btn" onclick="expandAll()">Expand all</button>
+  <button class="btn" onclick="collapseAll()">Collapse</button>
+  <button class="btn" onclick="clearAll()">Clear</button>
+  <button class="btn acc" onclick="doExport()">Export ↗</button>
+</div>
+<div class="stats">
+  <div class="stat">Total brands <b id="sTot">0</b></div>
+  <div class="stat">Selected <b id="sSel">0</b></div>
+  <div class="stat">Categories <b id="sCat">0</b></div>
+</div>
+<div id="wrap"></div>
+
+<script>
+const SEL={};
+const CATS=[
+{
+  id:"title", icon:"🏍️", label:"Title partner", sub:"Confirmed",
+  confirmed:true,
+  brands:[
+    {n:"Royal Enfield", t:"in", hot:true, why:"Confirmed title partner"}
+  ]
+},
+{
+  id:"copow", icon:"⚡", label:"Co-powered by partner", sub:"Energy · Motorsport · Auto brands",
+  brands:[
+    {n:"Red Bull India", t:"gl", hot:true, why:"Moto & adventure DNA, #1 choice"},
+    {n:"Monster Energy India", t:"gl", hot:true, why:"Strong motorsport & riding culture"},
+    {n:"Hero MotoCorp", t:"in", hot:true, why:"India's largest two-wheeler brand"},
+    {n:"KTM India", t:"gl", hot:true, why:"Adventure segment rival — co-branding"},
+    {n:"Bajaj Auto", t:"in", why:"Massive two-wheeler presence"},
+    {n:"TVS Motor Company", t:"in", why:"Adventure & touring segment"},
+    {n:"Jawa Motorcycles", t:"in", why:"Heritage & touring brand fit"},
+    {n:"Triumph Motorcycles India", t:"gl", why:"Premium touring brand co-power"},
+    {n:"Harley-Davidson India", t:"gl", why:"Lifestyle riding brand"},
+    {n:"Bosch India", t:"gl", why:"Tech & ignition systems partner"},
+    {n:"Sting (PepsiCo)", t:"gl", why:"Energy drink — youth & riders"},
+    {n:"Charged+ (Thums Up)", t:"in", why:"Bold energy — strong RE brand match"},
+    {n:"Castrol India", t:"gl", why:"Motorsport & performance lubricants"},
+    {n:"Motul India", t:"gl", why:"Premium moto oil — race events"},
+  ]
+},
+{
+  id:"tyre", icon:"🔵", label:"Official tyre partner", sub:"Tyre manufacturers only",
+  brands:[
+    {n:"MRF Tyres", t:"in", hot:true, why:"India's #1 tyre brand, dominant OEM"},
+    {n:"CEAT Tyres", t:"in", why:"Strong two-wheeler segment"},
+    {n:"Apollo Tyres", t:"in", why:"Wide distribution, event presence"},
+    {n:"TVS Eurogrip", t:"in", why:"Two-wheeler specialist"},
+    {n:"JK Tyres", t:"in", why:"Racing & performance heritage"},
+    {n:"Bridgestone India", t:"gl", why:"Premium global tyre brand"},
+    {n:"Michelin India", t:"gl", hot:true, why:"Adventure tyre segment leader"},
+    {n:"Pirelli", t:"gl", why:"Adventure & touring tyres"},
+    {n:"Metzeler", t:"gl", why:"Adventure tyre specialist — RE fit"},
+    {n:"Continental Tyres India", t:"gl", why:"Premium adventure segment"},
+    {n:"Kenda Tyres India", t:"gl", why:"Budget adventure segment"},
+  ]
+},
+{
+  id:"fuel", icon:"⛽", label:"Official fuel partner", sub:"Fuel companies & PSUs",
+  brands:[
+    {n:"Indian Oil (IOCL)", t:"in", hot:true, why:"Largest fuel network in India"},
+    {n:"Bharat Petroleum (BPCL)", t:"in", why:"National presence, event fuelling"},
+    {n:"Hindustan Petroleum (HPCL)", t:"in", why:"Pan-India fuel network"},
+    {n:"Jio-bp", t:"in", hot:true, why:"Premium fuel brand, young positioning"},
+    {n:"Shell India", t:"gl", why:"Premium fuel, motorsport heritage"},
+    {n:"Nayara Energy", t:"in", why:"Growing fuel retail chain"},
+  ]
+},
+{
+  id:"lub", icon:"🛢️", label:"Official lubricant partner", sub:"Engine oil & lubricant brands",
+  brands:[
+    {n:"Castrol India", t:"gl", hot:true, why:"Moto lubricant leader, RE OEM partner"},
+    {n:"Motul India", t:"gl", hot:true, why:"Premium moto oil, adventure events"},
+    {n:"Shell Advance", t:"gl", why:"Two-wheeler lubricant range"},
+    {n:"Gulf Oil India", t:"in", why:"Strong two-wheeler lubricant brand"},
+    {n:"HP Lubricants (HPCL)", t:"in", why:"PSU lubricant with wide reach"},
+    {n:"Servo (IOCL)", t:"in", why:"Mass-market lubricant brand"},
+    {n:"Liqui Moly India", t:"gl", why:"Premium German moto lubricant"},
+    {n:"Mobil 1 India", t:"gl", why:"Performance lubricant brand"},
+    {n:"Veedol", t:"gl", why:"Heritage oil brand"},
+    {n:"Valvoline India", t:"gl", why:"Performance segment"},
+    {n:"MAK Lubricants (BPCL)", t:"in", why:"Two-wheeler focused range"},
+  ]
+},
+{
+  id:"energy", icon:"🔋", label:"Official energy drink partner", sub:"Energy & functional drink brands",
+  brands:[
+    {n:"Red Bull India", t:"gl", hot:true, why:"Top pick — moto & extreme sport DNA"},
+    {n:"Monster Energy India", t:"gl", hot:true, why:"Motorsport & riding culture fit"},
+    {n:"Sting (PepsiCo)", t:"gl", why:"Mass-market energy drink"},
+    {n:"Charged+ (Thums Up)", t:"in", why:"Bold & powerful — RE brand tone"},
+    {n:"Hell Energy India", t:"gl", why:"Growing energy drink presence"},
+    {n:"Burnout Energy", t:"in", why:"Indian energy drink startup"},
+    {n:"Tzinga", t:"in", why:"Budget energy drink — mass market"},
+    {n:"Rockstar Energy", t:"gl", why:"Youth & adventure positioning"},
+  ]
+},
+{
+  id:"hydration", icon:"💧", label:"Official hydration partner", sub:"Water & electrolyte brands",
+  brands:[
+    {n:"Bisleri", t:"in", hot:true, why:"India's #1 packaged water — obvious pick"},
+    {n:"Himalayan Natural Water (Tata)", t:"in", hot:true, why:"Premium & adventure imagery"},
+    {n:"Kinley (Coca-Cola India)", t:"gl", why:"Wide distribution & visibility"},
+    {n:"Aquafina (PepsiCo)", t:"gl", why:"Mass market packaged water"},
+    {n:"Evocus Black Water", t:"in", why:"Premium alkaline water, young brand"},
+    {n:"Vedica Himalayan Spring", t:"in", why:"Premium mountain water"},
+    {n:"Gatorade India", t:"gl", why:"Sports hydration & electrolytes"},
+    {n:"FastAndUp Reload", t:"in", why:"Electrolyte tabs — rider-ready format"},
+    {n:"Pocari Sweat", t:"gl", why:"Isotonic sports hydration"},
+    {n:"ORS Hydration", t:"gl", why:"Medical-grade electrolyte brand"},
+    {n:"Rail Neer", t:"in", why:"PSU water — bulk event supply"},
+  ]
+},
+{
+  id:"nutrition", icon:"🥗", label:"Official nutrition partner", sub:"Sports nutrition & health food",
+  brands:[
+    {n:"MuscleBlaze", t:"in", hot:true, why:"India's #1 sports nutrition brand"},
+    {n:"FastAndUp", t:"in", hot:true, why:"Performance nutrition for athletes"},
+    {n:"Yoga Bar (ITC)", t:"in", why:"Health snack & protein bars"},
+    {n:"Oziva", t:"in", why:"Plant-based nutrition brand"},
+    {n:"HK Vitals (HealthKart)", t:"in", why:"Vitamins & supplements"},
+    {n:"Scitron", t:"in", why:"Budget sports nutrition"},
+    {n:"GNC India", t:"gl", why:"Global sports nutrition retail"},
+    {n:"Optimum Nutrition India", t:"gl", why:"World's top whey brand"},
+    {n:"Steadfast Nutrition", t:"in", why:"Sports & performance nutrition"},
+    {n:"Nutrabay", t:"in", why:"Online-first nutrition brand"},
+    {n:"The Whole Truth Foods", t:"in", why:"Clean label protein bars"},
+    {n:"Ritebite Max Protein", t:"in", why:"Protein bars & snacks"},
+  ]
+},
+{
+  id:"gear", icon:"🧥", label:"Official riding gear partner", sub:"Jackets · Gloves · Boots · Pants",
+  brands:[
+    {n:"Rynox Gear", t:"in", hot:true, why:"India's best riding gear brand"},
+    {n:"Cramster", t:"in", hot:true, why:"Popular Indian riding gear brand"},
+    {n:"Viaterra", t:"in", hot:true, why:"Adventure riding gear specialist"},
+    {n:"Royal Enfield Gear", t:"in", why:"In-house riding apparel line"},
+    {n:"BBG (Biking Brotherhood Gear)", t:"in", why:"Community-driven Indian brand"},
+    {n:"Raida Gear", t:"in", why:"Affordable Indian riding gear"},
+    {n:"Alpinestars India", t:"gl", why:"Premium global riding gear"},
+    {n:"Dainese India", t:"gl", why:"Italian premium moto gear"},
+    {n:"Revit India", t:"gl", why:"Dutch premium riding apparel"},
+    {n:"Klim India", t:"gl", why:"Adventure touring gear specialist"},
+    {n:"Oxford Products India", t:"gl", why:"Riding accessories & gear"},
+    {n:"Held India", t:"gl", why:"German riding gear heritage"},
+  ]
+},
+{
+  id:"helmet", icon:"🪖", label:"Official helmet partner", sub:"Helmet manufacturers only",
+  brands:[
+    {n:"Steelbird Helmets", t:"in", hot:true, why:"India's largest helmet manufacturer"},
+    {n:"Studds Helmets", t:"in", hot:true, why:"Top Indian helmet brand"},
+    {n:"Vega Helmets", t:"in", why:"Mass-market Indian helmets"},
+    {n:"Royal Enfield Helmets", t:"in", why:"In-house helmet line"},
+    {n:"Shoei India", t:"gl", why:"Japan's premium helmet brand"},
+    {n:"Arai India", t:"gl", why:"Premium Japanese racing helmets"},
+    {n:"AGV India", t:"gl", why:"Italian premium racing helmets"},
+    {n:"Bell Helmets India", t:"gl", why:"American heritage helmet brand"},
+    {n:"LS2 Helmets India", t:"gl", why:"Value premium segment"},
+    {n:"MT Helmets India", t:"gl", why:"Spanish affordable premium"},
+    {n:"HJC Helmets India", t:"gl", why:"Korean value premium helmets"},
+    {n:"Shark Helmets India", t:"gl", why:"French premium helmets"},
+  ]
+},
+{
+  id:"connect", icon:"📡", label:"Official connectivity partner", sub:"Telecom · GPS · Network brands",
+  brands:[
+    {n:"Jio (Reliance)", t:"in", hot:true, why:"India's #1 telecom — event infra fit"},
+    {n:"Airtel", t:"in", hot:true, why:"Premium network, strong event branding"},
+    {n:"Vi (Vodafone Idea)", t:"in", why:"Third telco presence"},
+    {n:"Garmin India", t:"gl", hot:true, why:"GPS navigation for riders"},
+    {n:"Beeline Moto", t:"gl", why:"Moto-specific GPS navigator"},
+    {n:"TomTom India", t:"gl", why:"Navigation technology brand"},
+    {n:"Samsung India", t:"gl", why:"5G devices & wearables"},
+    {n:"OnePlus India", t:"gl", why:"Youth-focused smartphones"},
+  ]
+},
+{
+  id:"stream", icon:"📺", label:"Official streaming partner", sub:"Video · Music · OTT platforms",
+  brands:[
+    {n:"JioCinema", t:"in", hot:true, why:"Biggest sports streaming in India"},
+    {n:"Disney+ Hotstar", t:"gl", why:"Premium OTT with large base"},
+    {n:"Sony LIV", t:"in", why:"Sports & entertainment OTT"},
+    {n:"Amazon Prime Video India", t:"gl", why:"Large subscriber base"},
+    {n:"YouTube India", t:"gl", hot:true, why:"Live streaming & content reach"},
+    {n:"Zee5", t:"in", why:"Hindi-belt OTT platform"},
+    {n:"JioSaavn", t:"in", why:"Music streaming for event"},
+    {n:"Spotify India", t:"gl", why:"Music & podcast streaming"},
+  ]
+},
+{
+  id:"bank", icon:"🏦", label:"Official banking partner", sub:"Banks & financial institutions",
+  brands:[
+    {n:"HDFC Bank", t:"in", hot:true, why:"India's largest private bank"},
+    {n:"ICICI Bank", t:"in", why:"Strong youth & digital banking"},
+    {n:"Axis Bank", t:"in", why:"Active in lifestyle sponsorships"},
+    {n:"Kotak Mahindra Bank", t:"in", why:"Premium youth positioning"},
+    {n:"SBI", t:"in", why:"Largest bank in India"},
+    {n:"IndusInd Bank", t:"in", why:"Active event sponsorships"},
+    {n:"IDFC First Bank", t:"in", why:"Digital-first challenger bank"},
+    {n:"Yes Bank", t:"in", why:"Event & lifestyle tie-ups"},
+    {n:"Federal Bank", t:"in", why:"South India strong presence"},
+    {n:"AU Small Finance Bank", t:"in", why:"Growing retail bank brand"},
+  ]
+},
+{
+  id:"pay", icon:"💳", label:"Official digital payments partner", sub:"UPI · Wallets · Payment gateways",
+  brands:[
+    {n:"PhonePe", t:"in", hot:true, why:"India's #1 UPI app by volume"},
+    {n:"Paytm", t:"in", hot:true, why:"Largest wallet & payments brand"},
+    {n:"Google Pay India", t:"gl", why:"Second largest UPI platform"},
+    {n:"Amazon Pay", t:"gl", why:"Integrated payments ecosystem"},
+    {n:"BHIM UPI (NPCI)", t:"in", why:"Government-backed UPI app"},
+    {n:"Razorpay", t:"in", why:"Event ticketing & payment infra"},
+    {n:"Pine Labs", t:"in", why:"POS & merchant payments"},
+    {n:"MobiKwik", t:"in", why:"Wallet & BNPL platform"},
+    {n:"Cashfree Payments", t:"in", why:"Payment gateway for events"},
+  ]
+},
+{
+  id:"insure", icon:"🛡️", label:"Official insurance partner", sub:"Motor & health insurance brands",
+  brands:[
+    {n:"HDFC ERGO", t:"in", hot:true, why:"Motor insurance leader"},
+    {n:"Bajaj Allianz", t:"in", hot:true, why:"Large motor insurance presence"},
+    {n:"ICICI Lombard", t:"in", why:"Top general insurance brand"},
+    {n:"Tata AIG", t:"in", why:"Strong motor insurance product"},
+    {n:"Digit Insurance", t:"in", why:"Tech-first, young audience fit"},
+    {n:"Acko Insurance", t:"in", why:"Digital-native motor insurance"},
+    {n:"New India Assurance", t:"in", why:"PSU — largest insurance reach"},
+    {n:"Reliance General Insurance", t:"in", why:"Wide distribution network"},
+    {n:"Royal Sundaram", t:"in", why:"Motor insurance specialist"},
+    {n:"SBI General Insurance", t:"in", why:"PSU with national reach"},
+  ]
+},
+{
+  id:"bev", icon:"🥤", label:"Official beverage partner", sub:"Soft drinks · Juices · Refreshments",
+  brands:[
+    {n:"Thums Up (Coca-Cola India)", t:"in", hot:true, why:"Bold & powerful — perfect RE tone"},
+    {n:"Coca-Cola India", t:"gl", why:"Mass event beverage coverage"},
+    {n:"PepsiCo India", t:"gl", why:"Large-scale event partner"},
+    {n:"Limca", t:"in", why:"Refreshment & hydration positioning"},
+    {n:"Sprite India", t:"gl", why:"Youth & refreshment brand"},
+    {n:"Frooti (Parle Agro)", t:"in", why:"India's iconic mango drink"},
+    {n:"Appy Fizz (Parle Agro)", t:"in", why:"Premium sparkling juice"},
+    {n:"Paper Boat", t:"in", why:"Indian culture & nostalgia brand"},
+    {n:"Real Juice (Dabur)", t:"in", why:"Health juice at events"},
+    {n:"Maaza (Coca-Cola India)", t:"in", why:"Popular mango drink"},
+    {n:"Bira 91", t:"in", why:"Craft beer brand — lifestyle events"},
+  ]
+},
+{
+  id:"food", icon:"🍽️", label:"Official food partner", sub:"Food delivery · QSR · Food brands",
+  brands:[
+    {n:"Zomato", t:"in", hot:true, why:"Event food delivery & branding"},
+    {n:"Swiggy", t:"in", hot:true, why:"Event food delivery partner"},
+    {n:"Haldiram's", t:"in", why:"India's top snack & food brand"},
+    {n:"Bikaji Foods", t:"in", why:"Traditional snacks & namkeen"},
+    {n:"ITC Foods (Bingo/Sunfeast)", t:"in", why:"Large FMCG food presence"},
+    {n:"Domino's India", t:"gl", why:"QSR event food stalls"},
+    {n:"Subway India", t:"gl", why:"Healthier QSR option at events"},
+    {n:"McDonald's India", t:"gl", why:"Mass QSR event coverage"},
+    {n:"Wow! Momo", t:"in", why:"Quick-serve Indian brand"},
+    {n:"MTR Foods", t:"in", why:"Ready-to-eat traditional food"},
+    {n:"Amul", t:"in", why:"Dairy & food stalls at events"},
+    {n:"Nestle India", t:"gl", why:"Wide food portfolio for events"},
+  ]
+},
+{
+  id:"snack", icon:"🍿", label:"Official snacking partner", sub:"Packaged snacks · Nuts · Bars",
+  brands:[
+    {n:"Lay's India (PepsiCo)", t:"gl", why:"India's top chips brand"},
+    {n:"Kurkure (PepsiCo)", t:"in", hot:true, why:"Iconic Indian snack — mass reach"},
+    {n:"Bingo! (ITC)", t:"in", why:"Strong challenger snack brand"},
+    {n:"Haldiram's Snacks", t:"in", hot:true, why:"India's top packaged namkeen"},
+    {n:"Too Yumm! (RP-Sanjiv Goenka)", t:"in", why:"Baked snack — health-conscious"},
+    {n:"Parle Products", t:"in", why:"Biscuits & snacks — mass market"},
+    {n:"Britannia NutriChoice", t:"in", why:"Healthy biscuits & snacks"},
+    {n:"Nutty Gritties", t:"in", why:"Nuts & trail mix — rider-friendly"},
+    {n:"Farmley", t:"in", why:"Premium dry fruits & mixes"},
+    {n:"Happilo", t:"in", why:"Premium healthy snacks"},
+    {n:"The Whole Truth Foods", t:"in", why:"Clean label protein bars"},
+    {n:"Yoga Bar Bars (ITC)", t:"in", why:"Granola & protein snack bars"},
+  ]
+},
+{
+  id:"safety", icon:"⚠️", label:"Official safety partner", sub:"Road safety · PPE · Reflective brands",
+  brands:[
+    {n:"3M India", t:"gl", hot:true, why:"Reflective gear, road safety products"},
+    {n:"Karam Safety", t:"in", why:"Indian safety equipment brand"},
+    {n:"Venus Safety", t:"in", why:"PPE manufacturer India"},
+    {n:"Honeywell India", t:"gl", why:"Industrial & personal safety"},
+    {n:"Resqtech India", t:"in", hot:true, why:"Roadside assistance kits for riders"},
+    {n:"Saviour Safety", t:"in", why:"Safety equipment brand"},
+    {n:"Bombay Reflectives", t:"in", why:"Reflective safety gear for riders"},
+    {n:"Stanley Black & Decker India", t:"gl", why:"Tool & safety equipment range"},
+  ]
+},
+{
+  id:"med", icon:"🏥", label:"Official medical partner", sub:"Hospitals · Health tech · Pharma",
+  brands:[
+    {n:"Apollo Hospitals", t:"in", hot:true, why:"India's largest hospital chain"},
+    {n:"Fortis Healthcare", t:"in", why:"Pan-India hospital network"},
+    {n:"Max Healthcare", t:"in", why:"North India hospital presence"},
+    {n:"Medanta", t:"in", why:"Super-specialty hospital brand"},
+    {n:"Tata 1mg", t:"in", hot:true, why:"Medicine delivery & health app"},
+    {n:"PharmEasy", t:"in", why:"Online pharmacy & diagnostics"},
+    {n:"Practo", t:"in", why:"Doctor consultation platform"},
+    {n:"Netmeds (Reliance)", t:"in", why:"Online pharmacy brand"},
+    {n:"MediBuddy", t:"in", why:"Corporate health partner"},
+    {n:"Cipla Health", t:"in", why:"Pharma OTC products"},
+    {n:"Dr. Reddy's", t:"in", why:"Pharma brand visibility"},
+  ]
+},
+{
+  id:"cam", icon:"📷", label:"Official camera partner", sub:"DSLR · Mirrorless · Lens brands",
+  brands:[
+    {n:"Sony India (Alpha series)", t:"gl", hot:true, why:"Adventure photography — top choice"},
+    {n:"Canon India", t:"gl", hot:true, why:"India's most popular camera brand"},
+    {n:"Nikon India", t:"gl", why:"Strong professional segment"},
+    {n:"Fujifilm India", t:"gl", why:"Compact mirrorless — lifestyle fit"},
+    {n:"Olympus India", t:"gl", why:"Rugged adventure cameras"},
+    {n:"Panasonic Lumix India", t:"gl", why:"Hybrid photo-video cameras"},
+    {n:"Sigma India", t:"gl", why:"Lens & camera brand"},
+    {n:"Leica India", t:"gl", why:"Ultra-premium camera brand"},
+  ]
+},
+{
+  id:"action", icon:"🎥", label:"Official action camera partner", sub:"Wearable & mountable cameras",
+  brands:[
+    {n:"GoPro India", t:"gl", hot:true, why:"The default for adventure & riding"},
+    {n:"DJI Osmo Action 4", t:"gl", hot:true, why:"GoPro's top rival — rising fast"},
+    {n:"Insta360 India", t:"gl", why:"360-degree action cam segment"},
+    {n:"Sony Action Cam (RX0 II)", t:"gl", why:"Premium compact action camera"},
+    {n:"SJCAM India", t:"gl", why:"Budget action camera segment"},
+  ]
+},
+{
+  id:"drone", icon:"🚁", label:"Official drone partner", sub:"Aerial photography & videography",
+  brands:[
+    {n:"DJI India", t:"gl", hot:true, why:"World's dominant drone brand"},
+    {n:"Ideaforge", t:"in", hot:true, why:"India's leading drone maker"},
+    {n:"Garuda Aerospace", t:"in", why:"Indian drone startup, well-funded"},
+    {n:"Skye Air Mobility", t:"in", why:"Indian drone logistics company"},
+    {n:"IG Drones", t:"in", why:"Agricultural & survey drones"},
+    {n:"Autel Robotics India", t:"gl", why:"DJI alternative, growing brand"},
+    {n:"Parrot Drones India", t:"gl", why:"French drone brand"},
+    {n:"Throttle Aerospace", t:"in", why:"Indian defence-focused drones"},
+  ]
+},
+{
+  id:"life", icon:"✨", label:"Official lifestyle partner", sub:"Fashion · Accessories · Audio · Outdoor",
+  brands:[
+    {n:"Woodland India", t:"in", hot:true, why:"Outdoor & adventure brand — perfect RE fit"},
+    {n:"Wildcraft", t:"in", hot:true, why:"India's top adventure outdoor brand"},
+    {n:"Decathlon India", t:"gl", why:"Largest sports retail — event presence"},
+    {n:"boAt Lifestyle", t:"in", hot:true, why:"India's #1 audio wearables brand"},
+    {n:"Noise", t:"in", why:"Smartwatch & earbuds brand"},
+    {n:"Fastrack (Titan)", t:"in", why:"Youth watches & accessories"},
+    {n:"Titan Watches", t:"in", why:"Premium Indian watch brand"},
+    {n:"Puma India", t:"gl", why:"Sportswear & lifestyle brand"},
+    {n:"Nike India", t:"gl", why:"Premium global sportswear"},
+    {n:"Adidas India", t:"gl", why:"Sport & lifestyle apparel"},
+    {n:"Levi's India", t:"gl", why:"Denim lifestyle brand — RE rider culture"},
+    {n:"Wrangler India", t:"gl", why:"Rugged denim & outdoor wear"},
+    {n:"Flying Machine", t:"in", why:"Indian youth denim brand"},
+    {n:"Skullcandy India", t:"gl", why:"Audio brand — youth & adventure"},
+    {n:"Fossil India", t:"gl", why:"Lifestyle watches & accessories"},
+  ]
+}
+];
+
+function render(){
+  const q=(document.getElementById('srch')||{value:''}).value.toLowerCase().trim();
+  const wrap=document.getElementById('wrap');
+  wrap.innerHTML='';
+  let tot=0,sel=0,cats=0;
+  CATS.forEach(cat=>{
+    const brands=cat.brands.filter(b=>!q||b.n.toLowerCase().includes(q)||cat.label.toLowerCase().includes(q));
+    if(!brands.length)return;
+    cats++;
+    const sc=brands.filter(b=>SEL[b.n]).length;
+    tot+=brands.length; sel+=sc;
+    const pct=brands.length?Math.round(sc/brands.length*100):0;
+    const open=q.length>0;
+    const div=document.createElement('div');
+    div.className='section'+(cat.confirmed?' confirmed':'');
+    div.innerHTML=`
+      <div class="sec-hd" onclick="toggle(this)">
+        <div class="sec-icon">${cat.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div class="sec-label">${cat.label}</div>
+          <div class="sec-sub">${cat.sub}</div>
+        </div>
+        <span class="badge">${sc}/${brands.length}</span>
+        <div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <span class="chev${open?' open':''}">&#9654;</span>
+      </div>
+      <div class="sec-body${open?' open':''}">
+        ${brands.map((b,i)=>`
+          ${i>0&&b.hot&&!brands[i-1].hot?'<div class="divider"></div>':''}
+          <div class="brand${SEL[b.n]?' ticked':''}" onclick="tick(${JSON.stringify(b.n)},this)">
+            <input type="checkbox"${SEL[b.n]?' checked':''} onclick="event.stopPropagation();tick(${JSON.stringify(b.n)},this.closest('.brand'))">
+            <span class="brand-name">${b.n}</span>
+            <span class="why">${b.why}</span>
+            <span class="pill ${b.t}">${b.t==='in'?'Indian':'Global'}</span>
+            ${b.hot?'<span class="pill hot">★ top pick</span>':''}
+          </div>`).join('')}
+      </div>`;
+    wrap.appendChild(div);
+  });
+  document.getElementById('sTot').textContent=tot;
+  document.getElementById('sSel').textContent=sel;
+  document.getElementById('sCat').textContent=cats;
+}
+function toggle(hd){
+  const body=hd.nextElementSibling;
+  const chev=hd.querySelector('.chev');
+  const isOpen=body.classList.toggle('open');
+  chev.classList.toggle('open',isOpen);
+}
+function tick(name,row){
+  SEL[name]=!SEL[name];
+  row.classList.toggle('ticked',SEL[name]);
+  row.querySelector('input').checked=SEL[name];
+  const body=row.closest('.sec-body');
+  const hd=body.previousElementSibling;
+  const rows=body.querySelectorAll('.brand');
+  const n=[...rows].filter(r=>r.classList.contains('ticked')).length;
+  hd.querySelector('.badge').textContent=`${n}/${rows.length}`;
+  hd.querySelector('.prog-fill').style.width=Math.round(n/rows.length*100)+'%';
+  document.getElementById('sSel').textContent=Object.values(SEL).filter(Boolean).length;
+}
+function expandAll(){document.querySelectorAll('.sec-body').forEach(b=>b.classList.add('open'));document.querySelectorAll('.chev').forEach(c=>c.classList.add('open'))}
+function collapseAll(){document.querySelectorAll('.sec-body').forEach(b=>b.classList.remove('open'));document.querySelectorAll('.chev').forEach(c=>c.classList.remove('open'))}
+function clearAll(){Object.keys(SEL).forEach(k=>delete SEL[k]);render()}
+function doFilter(){render()}
+function doExport(){
+  const lines=['ROYAL ENFIELD — SPONSORSHIP SHORTLIST\n','Generated: '+new Date().toLocaleDateString('en-IN')];
+  let any=false;
+  CATS.forEach(cat=>{
+    const sel=cat.brands.filter(b=>SEL[b.n]);
+    if(sel.length){
+      any=true;
+      lines.push(`\n\n━━ ${cat.label.toUpperCase()} ━━`);
+      sel.forEach(b=>lines.push(`  ✓  ${b.n}  [${b.t==='in'?'Indian':'Global'}]  — ${b.why}`));
+    }
+  });
+  if(!any){alert('Select some brands first!');return;}
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain'}));
+  a.download='RE_Sponsor_Shortlist.txt';a.click();
+}
+render();
+</script>
